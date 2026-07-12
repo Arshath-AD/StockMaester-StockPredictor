@@ -13,6 +13,8 @@ from .config import (
     TRAIN_RATIO,
     RF_N_ESTIMATORS,
     RF_MIN_SAMPLES_SPLIT,
+    RF_MAX_DEPTH,
+    RF_CLASS_WEIGHT,
     RF_RANDOM_STATE,
 )
 
@@ -33,19 +35,50 @@ def _fetch_data(symbol: str) -> pd.DataFrame:
     return data
 
 
+def _rsi(close: pd.Series, period: int = 14) -> pd.Series:
+    """Relative Strength Index — pure pandas, no extra dependencies."""
+    delta    = close.diff()
+    gain     = delta.clip(lower=0)
+    loss     = -delta.clip(upper=0)
+    avg_gain = gain.ewm(com=period - 1, min_periods=period).mean()
+    avg_loss = loss.ewm(com=period - 1, min_periods=period).mean()
+    rs       = avg_gain / avg_loss.replace(0, float("nan"))
+    return 100 - (100 / (1 + rs))
+
+
 def _engineer_features(data: pd.DataFrame) -> pd.DataFrame:
-    """Add technical indicators and classification target."""
-    data = data.copy()
-    data["MA10"] = data["Close"].rolling(window=10).mean()
-    data["MA50"] = data["Close"].rolling(window=50).mean()
+    """Add scale-invariant technical indicators and classification target."""
+    data  = data.copy()
+    close = data["Close"]
 
-    # Tomorrow's close — used to define the target label
-    data["Tomorrow"] = data["Close"].shift(-1)
+    # --- Moving average ratios (scale-invariant trend signal) ---
+    ma10 = close.rolling(10).mean()
+    ma20 = close.rolling(20).mean()
+    ma50 = close.rolling(50).mean()
+    data["MA10_ratio"]   = close / ma10          # >1 → price above 10-day avg
+    data["MA50_ratio"]   = close / ma50          # >1 → price above 50-day avg
 
-    # 0 = SELL  (drop >1%)  |  1 = HOLD  |  2 = BUY  (rise >1%)
-    data["Target"] = 1
-    data.loc[data["Tomorrow"] > data["Close"] * 1.01, "Target"] = 2
-    data.loc[data["Tomorrow"] < data["Close"] * 0.99, "Target"] = 0
+    # --- Momentum ---
+    data["Return_1d"]    = close.pct_change(1)   # yesterday's move
+    data["Return_5d"]    = close.pct_change(5)   # 5-day momentum
+
+    # --- RSI (14-period) ---
+    data["RSI_14"]       = _rsi(close, 14)
+
+    # --- Bollinger Band %B ---
+    std20                = close.rolling(20).std()
+    bb_upper             = ma20 + 2 * std20
+    bb_lower             = ma20 - 2 * std20
+    data["BB_pct"]       = (close - bb_lower) / (bb_upper - bb_lower)
+
+    # --- Volume ratio vs 20-day average ---
+    data["Volume_ratio"] = data["Volume"] / data["Volume"].rolling(20).mean()
+
+    # --- Target label (unchanged logic) ---
+    data["Tomorrow"]     = close.shift(-1)
+    data["Target"]       = 1
+    data.loc[data["Tomorrow"] > close * 1.01, "Target"] = 2   # BUY
+    data.loc[data["Tomorrow"] < close * 0.99, "Target"] = 0   # SELL
 
     data.dropna(inplace=True)
     return data
@@ -53,9 +86,12 @@ def _engineer_features(data: pd.DataFrame) -> pd.DataFrame:
 
 def _build_model() -> RandomForestClassifier:
     return RandomForestClassifier(
-        n_estimators=RF_N_ESTIMATORS,
-        min_samples_split=RF_MIN_SAMPLES_SPLIT,
-        random_state=RF_RANDOM_STATE,
+        n_estimators      = RF_N_ESTIMATORS,
+        min_samples_split = RF_MIN_SAMPLES_SPLIT,
+        max_depth         = RF_MAX_DEPTH,
+        class_weight      = RF_CLASS_WEIGHT,
+        random_state      = RF_RANDOM_STATE,
+        n_jobs            = -1,   # parallelise across all CPU cores
     )
 
 
