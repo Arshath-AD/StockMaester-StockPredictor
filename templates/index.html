@@ -3,81 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Stock Predictor</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #5e9eff; padding: 50px; text-align: center; }
-        .container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
-        h1 { margin-bottom: 10px; color: #333; }
-        p { color: #666; margin-bottom: 20px; }
-        
-        select, button { padding: 12px; width: 100%; margin-top: 15px; font-size: 16px; border-radius: 6px; border: 1px solid #ddd; }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.3s; }
-        button:hover { background-color: #0056b3; }
-        
-        .result-box { margin-top: 30px; padding: 25px; border-radius: 8px; animation: fadeIn 0.5s; }
-        .buy { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .sell { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .hold { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        
-        .metric-row { display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; }
-        .metric { text-align: center; width: 48%; }
-        .metric-label { font-size: 12px; text-transform: uppercase; color: #555; letter-spacing: 1px; }
-        .metric-value { font-size: 20px; font-weight: bold; }
-
-        .loader { display: none; color: #666; margin-top: 20px; font-style: italic; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    <title>StockMaester — AI Market Intelligence</title>
+    <meta name="description" content="Real-time AI-powered stock sentiment analysis for Indian equities.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <div class="container">
-        <h1>🚀 Market AI</h1>
-        <p>Real-time Stock Sentiment Analysis</p>
+<div class="bg-canvas"></div>
+<div class="grid-overlay"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
 
-        <form method="POST" onsubmit="document.getElementById('loading').style.display='block'">
-            <label for="stock_name" style="float: left; font-weight: bold; font-size: 14px; margin-bottom: 5px;">Select Asset:</label>
-            <select name="stock_name" id="stock_name">
-                {% for name in stocks %}
-                    <option value="{{ name }}" {% if name == selected_stock %}selected{% endif %}>{{ name }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit">Analyze Market Data</button>
-        </form>
+<div class="layout">
 
-        <div id="loading" class="loader">
-            ⚙️ Crunching 5 years of data...
+    <!-- ===== LEFT PANEL ===== -->
+    <div class="left-panel">
+
+        <div class="badge">
+            <div class="pulse-dot"></div>
+            Live AI Engine
         </div>
 
-        {% if error %}
-            <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-top: 20px;">
-                ⚠️ {{ error }}
-            </div>
-        {% endif %}
+        <h1 class="brand-title">StockMaester</h1>
+        <p class="brand-sub">AI-powered market intelligence for Indian equities. Machine learning on 5 years of historical data to surface actionable signals.</p>
 
-        {% if prediction %}
-            <div class="result-box {% if prediction == 'BUY' %}buy{% elif prediction == 'SELL' %}sell{% else %}hold{% endif %}">
-                <div style="font-size: 14px; opacity: 0.8;">Recommendation</div>
-                <div style="font-size: 32px; font-weight: 800; margin: 5px 0;">{{ prediction }}</div>
-                
-                <div class="metric-row">
+        <div class="stat-row">
+            <div class="stat-card">
+                <div class="stat-val">9</div>
+                <div class="stat-lbl">Assets Tracked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val">5Y</div>
+                <div class="stat-lbl">Data Range</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val">100</div>
+                <div class="stat-lbl">Trees in Forest</div>
+            </div>
+        </div>
+
+        <div class="feature-list">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#42a5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        <polyline points="17 6 23 6 23 12"/>
+                    </svg>
+                </div>
+                <div class="feature-text"><strong>Moving Averages</strong> &mdash; MA10 &amp; MA50 as key predictors</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#42a5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <rect x="9" y="9" width="6" height="6"/>
+                        <line x1="9" y1="1" x2="9" y2="4"/>
+                        <line x1="15" y1="1" x2="15" y2="4"/>
+                        <line x1="9" y1="20" x2="9" y2="23"/>
+                        <line x1="15" y1="20" x2="15" y2="23"/>
+                        <line x1="20" y1="9" x2="23" y2="9"/>
+                        <line x1="20" y1="14" x2="23" y2="14"/>
+                        <line x1="1" y1="9" x2="4" y2="9"/>
+                        <line x1="1" y1="14" x2="4" y2="14"/>
+                    </svg>
+                </div>
+                <div class="feature-text"><strong>Random Forest ML</strong> &mdash; ensemble classifier for robust signals</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#42a5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <polyline points="9 12 11 14 15 10"/>
+                    </svg>
+                </div>
+                <div class="feature-text"><strong>80/20 Validation</strong> &mdash; real test-set accuracy reporting</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== RIGHT PANEL ===== -->
+    <div class="right-panel">
+
+        <p class="panel-heading">Market Analyzer</p>
+        <p class="panel-title">Get Your AI Signal</p>
+
+        <div class="form-card">
+            <form method="POST" onsubmit="handleSubmit()">
+                <div class="field-label">Select Asset</div>
+                <div class="select-wrap">
+                    <select name="stock_name" id="stock_name">
+                        {% for name in stocks %}
+                            <option value="{{ name }}" {% if name == selected_stock %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                    <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+
+                <button type="submit" class="btn-analyze" id="analyzeBtn">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    Analyze Market Data
+                </button>
+            </form>
+
+            <div class="loader" id="loading">
+                <div class="loader-ring"></div>
+                <p>Crunching 5 years of market data&hellip;</p>
+            </div>
+
+            {% if error == 'INSUFFICIENT_DATA' %}
+            <div class="insufficient-card">
+                <div class="insufficient-icon-wrap">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#42a5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <ellipse cx="12" cy="12" rx="10" ry="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </div>
+                <div class="insufficient-content">
+                    <div class="insufficient-title">Insufficient Historical Data</div>
+                    <div class="insufficient-desc">
+                        The model requires a minimum of 50 trading days of data to generate a reliable signal.
+                        This asset may be newly listed or temporarily unavailable from the data provider.
+                        Please try again later or select a different asset.
+                    </div>
+                    <span class="insufficient-tag">Data Unavailable</span>
+                </div>
+            </div>
+            {% elif error %}
+            <div class="error-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            {% if prediction %}
+            <div class="result-box result-{{ prediction | lower }}">
+                <div class="result-lbl">AI Recommendation</div>
+                <div class="signal">
+                    {% if prediction == 'BUY' %}
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        <polyline points="17 6 23 6 23 12"/>
+                    </svg>
+                    {% elif prediction == 'SELL' %}
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+                        <polyline points="17 18 23 18 23 12"/>
+                    </svg>
+                    {% else %}
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                    {% endif %}
+                    {{ prediction }}
+                </div>
+                <div class="metrics-row">
                     <div class="metric">
-                        <div class="metric-label">Model Accuracy</div>
-                        <div class="metric-value">{{ accuracy }}</div>
+                        <div class="metric-lbl">Model Accuracy</div>
+                        <div class="metric-val">{{ accuracy }}</div>
                     </div>
                     <div class="metric">
-                        <div class="metric-label">Algorithm</div>
-                        <div class="metric-value">Random Forest</div>
+                        <div class="metric-lbl">Algorithm</div>
+                        <div class="metric-val" style="font-size:13px;padding-top:4px;">Random Forest</div>
                     </div>
                 </div>
             </div>
-            
-            <p style="font-size: 11px; margin-top: 15px; color: #999;">
-                *Accuracy calculated on historical test split (last 20% of data). <br>
-                Past performance is not indicative of future results.
-            </p>
-        {% endif %} 
+            {% endif %}
+
+            <div class="chip-row">
+                <div class="chip"><div class="chip-dot"></div> NSE India</div>
+                <div class="chip"><div class="chip-dot"></div> 5Y Historical</div>
+                <div class="chip"><div class="chip-dot"></div> ML Powered</div>
+            </div>
         </div>
+
+    </div>
+
+</div>
+
+<!-- ===== DISCLAIMER FOOTER ===== -->
+<div class="disclaimer-footer">
+    <div class="disclaimer-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffca28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+    </div>
+    <div class="disclaimer-body">
+        <div class="disclaimer-title">Important Disclaimer &mdash; Read Before Acting</div>
+        <div class="disclaimer-text">
+            <strong>StockMaester is a personal research tool, not financial advice.</strong>
+            Predictions are generated by a machine learning model trained on historical price data and <strong>do not guarantee future results</strong>.
+            Markets are influenced by news, geopolitical events, earnings surprises, and other factors this model cannot predict.
+            <strong>Never invest money you cannot afford to lose.</strong>
+            Always consult a registered financial advisor before making any investment decision.
+            Model accuracy is measured on a held-out historical test split &mdash; real-world performance may differ significantly.
+        </div>
+    </div>
+</div>
+
+<script>
+    function handleSubmit() {
+        document.getElementById('loading').style.display = 'flex';
+        const btn = document.getElementById('analyzeBtn');
+        btn.disabled = true;
+        btn.textContent = 'Analyzing\u2026';
+    }
+</script>
 
 </body>
 </html>
